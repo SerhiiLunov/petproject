@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sql_db
+    username: user
+    password: password
+    driverClassName: org.postgresql.Driver
+
+liquibase:
+  change-log: classpath:db.changelog/0.0.1/db.changelog-master.yaml
+
+server:
+  port: 8091
+
+jwt:
+   secret: your_jwt_secret_here_with_minimum_32_characters
+   issuer: your_jwt_issuer_here
+   expiration: 3600000
+
