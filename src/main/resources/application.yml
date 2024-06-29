@@ -9,7 +9,7 @@ liquibase:
   change-log: classpath:db.changelog/0.0.1/db.changelog-master.yaml
 
 server:
-  port: 8091
+  port: 8097
 
 jwt:
    secret: your_jwt_secret_here_with_minimum_32_characters
