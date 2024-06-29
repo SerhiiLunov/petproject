@@ -1,7 +1,9 @@
 package dev.lunyov.petprojectsql.controllers;
 
-import dev.lunyov.petprojectsql.models.Session;
-import dev.lunyov.petprojectsql.models.Users;
+import dev.lunyov.petprojectsql.entity.Session;
+import dev.lunyov.petprojectsql.entity.Users;
+import dev.lunyov.petprojectsql.dto.AddPartnerReq;
+import dev.lunyov.petprojectsql.dto.AddParthnerResp;
 import dev.lunyov.petprojectsql.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -20,8 +22,9 @@ public class UserController {
     }
 
     @PostMapping("/add-partner")
-    public ResponseEntity<String> addPartner(@RequestParam String email) {
-        if (userService.findByEmail(email).isPresent()) {
+    @Role("user_creation")
+    public AddParthnerResp addPartner(@RequestParam AddPartnerReq addParthnerReq) {
+        if (userService.findByEmail(addParthnerReq.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Користувач з таким email вже існує");
         }
 
@@ -68,4 +71,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
+
+    @PostMapping("/test")
+    @Role("test_url")
+
+
+
 }

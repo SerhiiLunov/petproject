@@ -1,9 +1,9 @@
 package dev.lunyov.petprojectsql.services;
 
-import dev.lunyov.petprojectsql.models.Users;
-import dev.lunyov.petprojectsql.models.Role;
-import dev.lunyov.petprojectsql.models.Permission;
-import dev.lunyov.petprojectsql.models.Session;
+import dev.lunyov.petprojectsql.entity.Users;
+import dev.lunyov.petprojectsql.entity.Role;
+import dev.lunyov.petprojectsql.entity.PermissionEntity;
+import dev.lunyov.petprojectsql.entity.Session;
 import dev.lunyov.petprojectsql.repositories.UserRepository;
 import dev.lunyov.petprojectsql.repositories.RoleRepository;
 import dev.lunyov.petprojectsql.repositories.PermissionRepository;
@@ -63,7 +63,7 @@ public class UserService {
     }
 
     // Permission-related methods
-    public Permission findPermissionByName(String name) {
+    public PermissionEntity findPermissionByName(String name) {
         return permissionRepository.findByName(name);
     }
 

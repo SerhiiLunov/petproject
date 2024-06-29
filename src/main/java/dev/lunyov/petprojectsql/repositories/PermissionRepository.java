@@ -1,8 +1,8 @@
 package dev.lunyov.petprojectsql.repositories;
 
-import dev.lunyov.petprojectsql.models.Permission;
+import dev.lunyov.petprojectsql.entity.PermissionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PermissionRepository extends JpaRepository<Permission, Long> {
-    Permission findByName(String name);
+public interface PermissionRepository extends JpaRepository<PermissionEntity, Long> {
+    PermissionEntity findByName(String name);
 }

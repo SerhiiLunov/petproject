@@ -1,11 +1,10 @@
-package dev.lunyov.petprojectsql.models;
-import jakarta.persistence.*;
-
+package dev.lunyov.petprojectsql.entity;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "role")
-public class Role {
+@Table(name = "permission")
+public class PermissionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,11 +14,8 @@ public class Role {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "permission")
     private Set<RolePermission> rolePermissions;
-
-    @OneToMany(mappedBy = "role")
-    private Set<UserRole> userRoles;
 
     public Long getId() {
         return id;
@@ -44,13 +40,4 @@ public class Role {
     public void setRolePermissions(Set<RolePermission> rolePermissions) {
         this.rolePermissions = rolePermissions;
     }
-
-    public Set<UserRole> getUserRoles() {
-        return userRoles;
-    }
-
-    public void setUserRoles(Set<UserRole> userRoles) {
-        this.userRoles = userRoles;
-    }
-
 }

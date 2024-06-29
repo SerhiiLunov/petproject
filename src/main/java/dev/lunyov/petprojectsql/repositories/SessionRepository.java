@@ -1,6 +1,6 @@
 package dev.lunyov.petprojectsql.repositories;
 
-import dev.lunyov.petprojectsql.models.Session;
+import dev.lunyov.petprojectsql.entity.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,5 +1,6 @@
-package dev.lunyov.petprojectsql.models;
-import jakarta.persistence.*;
+package dev.lunyov.petprojectsql.entity;
+import javax.persistence.*;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity

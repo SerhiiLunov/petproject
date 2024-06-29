@@ -1,5 +1,6 @@
-package dev.lunyov.petprojectsql.models;
-import jakarta.persistence.*;
+package dev.lunyov.petprojectsql.entity;
+import javax.persistence.*;
+
 @Entity
 @Table(name = "role_permission")
 public class RolePermission {
@@ -13,7 +14,7 @@ public class RolePermission {
 
     @ManyToOne
     @JoinColumn(name = "permission_id", nullable = false)
-    private Permission permission;
+    private PermissionEntity permission;
 
     public Long getId() {
         return id;
@@ -31,11 +32,11 @@ public class RolePermission {
         this.role = role;
     }
 
-    public Permission getPermission() {
+    public PermissionEntity getPermission() {
         return permission;
     }
 
-    public void setPermission(Permission permission) {
+    public void setPermission(PermissionEntity permission) {
         this.permission = permission;
     }
 }

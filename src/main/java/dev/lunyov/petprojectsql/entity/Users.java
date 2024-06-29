@@ -1,6 +1,6 @@
-package dev.lunyov.petprojectsql.models;
-import jakarta.persistence.*;
+package dev.lunyov.petprojectsql.entity;
 
+import javax.persistence.*;
 import java.util.Set;
 
 

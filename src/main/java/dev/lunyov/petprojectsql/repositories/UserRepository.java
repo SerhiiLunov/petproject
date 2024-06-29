@@ -1,7 +1,7 @@
 package dev.lunyov.petprojectsql.repositories;
 
 
-import dev.lunyov.petprojectsql.models.Users;
+import dev.lunyov.petprojectsql.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

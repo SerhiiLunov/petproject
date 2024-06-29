@@ -1,5 +1,5 @@
-package dev.lunyov.petprojectsql.models;
-import jakarta.persistence.*;
+package dev.lunyov.petprojectsql.entity;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "technical")
