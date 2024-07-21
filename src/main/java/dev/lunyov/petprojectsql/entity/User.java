@@ -1,29 +1,31 @@
 package dev.lunyov.petprojectsql.entity;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 
-
 import java.util.Set;
+
 
 @Setter
 @Getter
 @Entity
-@Table(name = "role")
-public class Role {
-
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    @OneToMany(mappedBy = "role")
-    private Set<RolePermission> rolePermissions;
+    @Column(nullable = false)
+    private String password;
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "user")
     private Set<UserRole> userRoles;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Session> sessions;
 }

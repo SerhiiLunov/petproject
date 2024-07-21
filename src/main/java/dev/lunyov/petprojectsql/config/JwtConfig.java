@@ -17,7 +17,8 @@ public class JwtConfig {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    public static final long EXPIRATION_TIME = 864_000_000; // 10 days in milliseconds
+    @Value("${jwt.expiration}")
+    private long jwtExpirationMs;
 
     @Bean
     public SecretKey secretKey() {
@@ -26,9 +27,9 @@ public class JwtConfig {
     }
 
     @Bean
-    public JwtBuilder jwtBuilder() {
+    public JwtBuilder jwtBuilder(SecretKey secretKey) {
         return Jwts.builder()
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(secretKey());
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(secretKey);
     }
 }

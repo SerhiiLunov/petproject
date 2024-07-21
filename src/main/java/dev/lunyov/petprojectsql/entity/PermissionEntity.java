@@ -1,7 +1,13 @@
 package dev.lunyov.petprojectsql.entity;
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "permission")
 public class PermissionEntity {
@@ -16,28 +22,4 @@ public class PermissionEntity {
 
     @OneToMany(mappedBy = "permission")
     private Set<RolePermission> rolePermissions;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<RolePermission> getRolePermissions() {
-        return rolePermissions;
-    }
-
-    public void setRolePermissions(Set<RolePermission> rolePermissions) {
-        this.rolePermissions = rolePermissions;
-    }
 }

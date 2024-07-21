@@ -1,65 +1,46 @@
--- Create users table
-CREATE TABLE IF NOT EXISTS users (
-                                    id BIGSERIAL PRIMARY KEY,
-                                    email VARCHAR(255) NOT NULL UNIQUE,
-                                    password VARCHAR(255) NOT NULL
+-- Create user table if not exists
+CREATE TABLE IF NOT EXISTS "user" (
+                                      id BIGSERIAL PRIMARY KEY,
+                                      email VARCHAR(255) NOT NULL UNIQUE,
+                                      password VARCHAR(255) NOT NULL,
+                                      creation_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                                      modification_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create role table
-CREATE TABLE IF NOT EXISTS role (
-                                    id BIGSERIAL PRIMARY KEY,
-                                    name VARCHAR(255) NOT NULL UNIQUE
-);
+-- Insert user with hashed password if not exists
+INSERT INTO "user" (email, password)
+VALUES ('user@gmail.com', '$2a$10$DOWSD8N4XS2Y/5TVjhyXSeHAdTsm8l6.e6O5u8sxEwAqFq/QL9Fpe') -- "password" hashed using BCrypt
+ON CONFLICT (email) DO NOTHING;
 
--- Create permission table
-CREATE TABLE IF NOT EXISTS permission (
-                                          id BIGSERIAL PRIMARY KEY,
-                                          name VARCHAR(255) NOT NULL UNIQUE
-);
+-- Create a trigger function to update the modification_time column
+CREATE OR REPLACE FUNCTION update_modification_time()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.modification_time = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- Create role_permission table
-CREATE TABLE IF NOT EXISTS role_permission (
-                                               id BIGSERIAL PRIMARY KEY,
-                                               role_id BIGINT NOT NULL,
-                                               permission_id BIGINT NOT NULL,
-                                               FOREIGN KEY (role_id) REFERENCES role(id),
-                                               FOREIGN KEY (permission_id) REFERENCES permission(id)
-);
+-- Check the existence of a trigger before creating it
+DO $$
+    BEGIN
+        IF NOT EXISTS (
+            SELECT 1
+            FROM pg_trigger
+            WHERE tgname = 'set_modification_time'
+        ) THEN
+-- Create the trigger to call the update_modification_time function before each update
+CREATE TRIGGER set_modification_time
+    BEFORE UPDATE ON "user"
+    FOR EACH ROW
+EXECUTE FUNCTION update_modification_time();
+END IF;
+END $$;
 
--- Create user_role table
-CREATE TABLE IF NOT EXISTS user_role (
-                                         id BIGSERIAL PRIMARY KEY,
-                                         user_id BIGINT NOT NULL,
-                                         role_id BIGINT NOT NULL,
-                                         FOREIGN KEY (user_id) REFERENCES users(id),
-                                         FOREIGN KEY (role_id) REFERENCES role(id)
-);
 
--- Create session table
-CREATE TABLE IF NOT EXISTS session (
-                                       id BIGSERIAL PRIMARY KEY,
-                                       token VARCHAR(255) NOT NULL,
-                                       created_at TIMESTAMP NOT NULL,
-                                       expires_at TIMESTAMP NOT NULL,
-                                       user_id BIGINT NOT NULL,
-                                       FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
--- Create technical table
-CREATE TABLE IF NOT EXISTS technical (
-                                         id BIGSERIAL PRIMARY KEY,
-                                         jwt_secret VARCHAR(255),
-                                         jwt_issuer VARCHAR(255),
-                                         jwt_expiration_ms INT
-);
-
--- DROP TABLE IF EXISTS user_role CASCADE;
--- DROP TABLE IF EXISTS session CASCADE;
--- DROP TABLE IF EXISTS users CASCADE;
--- DROP TABLE IF EXISTS role CASCADE;
--- DROP TABLE IF EXISTS permission CASCADE;
--- DROP TABLE IF EXISTS role_permission CASCADE;
--- DROP TABLE IF EXISTS technical CASCADE;
+-- DROP TABLE "user" CASCADE ;
 --
--- DELETE FROM DATABASECHANGELOG;
--- DELETE FROM DATABASECHANGELOGLOCK;
+-- DELETE FROM DATABASECHANGELOG WHERE filename = 'db/changelog/0.0.1/changelog1.sql';
+
+
+

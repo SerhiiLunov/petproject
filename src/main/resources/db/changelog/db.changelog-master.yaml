@@ -4,3 +4,13 @@ databaseChangeLog:
       file: db/changelog/0.0.1/changelog1.sql
   - include:
       file: db/changelog/0.0.1/changelog2.sql
+  - include:
+      file: db/changelog/0.0.1/changelog3.sql
+  - include:
+      file: db/changelog/0.0.1/changelog4.sql
+  - include:
+      file: db/changelog/0.0.1/changelog5.sql
+  - include:
+      file: db/changelog/0.0.1/changelog6.sql
+  - include:
+      file: db/changelog/0.0.1/changelog7.sql

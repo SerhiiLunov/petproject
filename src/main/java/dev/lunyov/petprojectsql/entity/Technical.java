@@ -1,6 +1,12 @@
 package dev.lunyov.petprojectsql.entity;
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+
+
+@Setter
+@Getter
 @Entity
 @Table(name = "technical")
 public class Technical {
@@ -16,36 +22,4 @@ public class Technical {
 
     @Column(name = "jwt_expiration_ms")
     private Integer jwtExpirationMs;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getJwtSecret() {
-        return jwtSecret;
-    }
-
-    public void setJwtSecret(String jwtSecret) {
-        this.jwtSecret = jwtSecret;
-    }
-
-    public String getJwtIssuer() {
-        return jwtIssuer;
-    }
-
-    public void setJwtIssuer(String jwtIssuer) {
-        this.jwtIssuer = jwtIssuer;
-    }
-
-    public Integer getJwtExpirationMs() {
-        return jwtExpirationMs;
-    }
-
-    public void setJwtExpirationMs(Integer jwtExpirationMs) {
-        this.jwtExpirationMs = jwtExpirationMs;
-    }
 }

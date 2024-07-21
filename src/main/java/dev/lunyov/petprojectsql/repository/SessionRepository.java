@@ -1,4 +1,4 @@
-package dev.lunyov.petprojectsql.repositories;
+package dev.lunyov.petprojectsql.repository;
 
 import dev.lunyov.petprojectsql.entity.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
