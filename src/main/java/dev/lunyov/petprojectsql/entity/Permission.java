@@ -11,8 +11,8 @@ import java.util.UUID;
 @Setter
 @Getter
 @Entity
-@Table(name = "role")
-public class Role {
+@Table(name = "permission")
+public class Permission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,11 +28,8 @@ public class Role {
     @Column(name = "modification_time", nullable = false)
     private LocalDateTime modificationTime;
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "permission")
     private Set<RolePermission> rolePermissions;
-
-    @OneToMany(mappedBy = "role")
-    private Set<UserRole> userRoles;
 
     @PrePersist
     protected void onCreate() {

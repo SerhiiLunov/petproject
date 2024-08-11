@@ -1,9 +1,10 @@
 package dev.lunyov.petprojectsql.entity;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.*;
+import java.util.UUID;
 
 
 @Setter
@@ -13,7 +14,8 @@ import lombok.Setter;
 public class RolePermission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
@@ -21,5 +23,5 @@ public class RolePermission {
 
     @ManyToOne
     @JoinColumn(name = "permission_id", nullable = false)
-    private PermissionEntity permission;
+    private Permission permission;
 }

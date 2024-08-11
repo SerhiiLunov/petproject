@@ -1,10 +1,11 @@
 package dev.lunyov.petprojectsql.entity;
-import jakarta.persistence.*;
+
 import lombok.Getter;
 import lombok.Setter;
 
-
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -13,7 +14,8 @@ import java.time.LocalDateTime;
 public class Session {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private UUID id;
 
     @Column(name = "token", nullable = false)
     private String token;

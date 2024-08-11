@@ -4,12 +4,20 @@ spring:
     username: user
     password: password
     driverClassName: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true;
+        use_sql_comments: true;
+
+
 
 liquibase:
   change-log: classpath:db.changelog/0.0.1/db.changelog-master.yaml
 
 server:
-  port: 8099
+  port: 8097
 
 jwt:
    secret: your_jwt_secret_here_with_minimum_32_characters

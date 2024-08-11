@@ -1,6 +1,6 @@
 package dev.lunyov.petprojectsql.repositoryWrapper;
 
-import dev.lunyov.petprojectsql.entity.PermissionEntity;
+import dev.lunyov.petprojectsql.entity.Permission;
 import dev.lunyov.petprojectsql.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,7 +14,7 @@ public class PermissionRepositoryWrapper {
         this.permissionRepository = permissionRepository;
     }
 
-    public PermissionEntity findByName(String name) {
+    public Permission findByName(String name) {
         return permissionRepository.findByName(name);
     }
 }

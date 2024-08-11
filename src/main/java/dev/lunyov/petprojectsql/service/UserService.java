@@ -2,7 +2,7 @@ package dev.lunyov.petprojectsql.service;
 
 import dev.lunyov.petprojectsql.entity.User;
 import dev.lunyov.petprojectsql.entity.Role;
-import dev.lunyov.petprojectsql.entity.PermissionEntity;
+import dev.lunyov.petprojectsql.entity.Permission;
 import dev.lunyov.petprojectsql.entity.Session;
 import dev.lunyov.petprojectsql.repositoryWrapper.PermissionRepositoryWrapper;
 import dev.lunyov.petprojectsql.repositoryWrapper.RoleRepositoryWrapper;
@@ -29,6 +29,8 @@ public class UserService {
     private final SessionRepositoryWrapper sessionRepositoryWrapper;
     private final SecretKey secretKey;
     private final String jwtIssuer;
+
+    @Value("${jwt.expiration}")
     private final long jwtExpirationMs;
     private final PasswordEncoder passwordEncoder;
 
@@ -49,6 +51,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+public String generateJwtToken(String email){
+        return Jwts.builder()
+        .setSubject(email)
+        .setIssuedAt(new Date())
+        .setExpiration(new Date(System.currentTimeMillis()+jwtExpirationMs))
+        .signWith(secretKey)
+        .compact();
+        }
 
     // User-related methods
     public Optional<User> findByEmail(String email) {
@@ -70,7 +80,7 @@ public class UserService {
     }
 
     // Permission-related methods
-    public PermissionEntity findPermissionByName(String name) {
+    public Permission findPermissionByName(String name) {
         return permissionRepositoryWrapper.findByName(name);
     }
 
