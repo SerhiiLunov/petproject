@@ -1,131 +1,107 @@
 package dev.lunyov.petprojectsql.service;
 
+import dev.lunyov.petprojectsql.controller.UserController;
+import dev.lunyov.petprojectsql.dto.CreateUserByEmailReq;
 import dev.lunyov.petprojectsql.entity.User;
-import dev.lunyov.petprojectsql.entity.Role;
-import dev.lunyov.petprojectsql.entity.Permission;
-import dev.lunyov.petprojectsql.entity.Session;
-import dev.lunyov.petprojectsql.repositoryWrapper.PermissionRepositoryWrapper;
-import dev.lunyov.petprojectsql.repositoryWrapper.RoleRepositoryWrapper;
-import dev.lunyov.petprojectsql.repositoryWrapper.SessionRepositoryWrapper;
 import dev.lunyov.petprojectsql.repositoryWrapper.UserRepositoryWrapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import dev.lunyov.petprojectsql.util.UserState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 @Service
 public class UserService {
-
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserRepositoryWrapper userRepositoryWrapper;
-    private final RoleRepositoryWrapper roleRepositoryWrapper;
-    private final PermissionRepositoryWrapper permissionRepositoryWrapper;
-    private final SessionRepositoryWrapper sessionRepositoryWrapper;
-    private final SecretKey secretKey;
-    private final String jwtIssuer;
-
-    @Value("${jwt.expiration}")
-    private final long jwtExpirationMs;
+    private final EmailService emailService;
+    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepositoryWrapper userRepositoryWrapper,
-                       RoleRepositoryWrapper roleRepositoryWrapper,
-                       PermissionRepositoryWrapper permissionRepositoryWrapper,
-                       SessionRepositoryWrapper sessionRepositoryWrapper,
-                       SecretKey secretKey, @Value("${jwt.issuer}") String jwtIssuer,
-                       @Value("${jwt.expiration}") long jwtExpirationMs, PasswordEncoder passwordEncoder) {
+                       EmailService emailService,
+                       JwtService jwtService,
+                       PasswordEncoder passwordEncoder) {
         this.userRepositoryWrapper = userRepositoryWrapper;
-        this.roleRepositoryWrapper = roleRepositoryWrapper;
-        this.permissionRepositoryWrapper = permissionRepositoryWrapper;
-        this.sessionRepositoryWrapper = sessionRepositoryWrapper;
-        this.secretKey = secretKey;
-        this.jwtIssuer = jwtIssuer;
-        this.jwtExpirationMs = jwtExpirationMs;
+        this.emailService = emailService;
+        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
 
-public String generateJwtToken(String email){
-        return Jwts.builder()
-        .setSubject(email)
-        .setIssuedAt(new Date())
-        .setExpiration(new Date(System.currentTimeMillis()+jwtExpirationMs))
-        .signWith(secretKey)
-        .compact();
+    public void createUserByEmail(CreateUserByEmailReq request) {
+        Optional<User> existingUser = userRepositoryWrapper.findByLogin(request.getEmail());
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("User with this email already exists.");
         }
+        User user = new User();
+        user.setLogin(request.getEmail());
+        user.setCreateDateTime(LocalDateTime.now());
+        user.setLastModificationDateTime(LocalDateTime.now());
+        user.setDescription(request.getDescription());
+        user.setState(UserState.CHANGE_PASSWORD);
+        user.setPassword(new BCryptPasswordEncoder().encode("defaultPassword"));
+        userRepositoryWrapper.save(user);
 
-    // User-related methods
-    public Optional<User> findByEmail(String email) {
-        return userRepositoryWrapper.findByEmail(email);
+
+        String token = jwtService.generateJwtToken(request.getEmail());
+        String registrationLink = "http://localhost:8096/register?token=" + token;
+
+        emailService.sendEmail(
+                request.getEmail(),
+                "Registration in iDivizer",
+                "Your email is added to iDivizer, please use the link to register: " + registrationLink
+        );
+    }
+
+    public void completeRegistration(String token, String newPassword) {
+        logger.debug("Received token for registration: " + token);
+
+        // Витяг email з токена
+        String email;
+        try {
+            email = jwtService.extractEmail(token);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid JWT token format during registration.", e);
+            throw e;
+        }
+        logger.debug("Extracted email from token: " + email);
+
+        // Пошук користувача за email
+        User user = userRepositoryWrapper.findByLogin(email)
+                .orElseThrow(() -> {
+                    logger.error("User not found with email: " + email);
+                    return new RuntimeException("User not found");
+                });
+
+        logger.debug("Found user for registration: " + user.getLogin());
+
+        // Оновлення даних користувача
+        user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
+        user.setState(UserState.ACTIVE);
+        user.setLastModificationDateTime(LocalDateTime.now());
+
+        // Спроба зберегти користувача
+        try {
+            userRepositoryWrapper.save(user);
+            logger.info("User registered successfully: " + user.getLogin());
+        } catch (Exception e) {
+            logger.error("Failed to register user: " + user.getLogin(), e);
+            throw new RuntimeException("Failed to register user", e);
+        }
+    }
+
+    public Optional<User> findByLogin(String login) {
+        return userRepositoryWrapper.findByLogin(login);
     }
 
     public void save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepositoryWrapper.save(user);
-    }
-
-    public boolean checkPassword(User user, String rawPassword) {
-        return passwordEncoder.matches(rawPassword, user.getPassword());
-    }
-
-    // Role-related methods
-    public Role findRoleByName(String name) {
-        return roleRepositoryWrapper.findByName(name);
-    }
-
-    // Permission-related methods
-    public Permission findPermissionByName(String name) {
-        return permissionRepositoryWrapper.findByName(name);
-    }
-
-    // Session-related methods
-    public Optional<Object> findSessionByToken(String token) {
-        return sessionRepositoryWrapper.findByToken(token);
-    }
-
-    public Session createSession(User user, String token, LocalDateTime expiresAt) {
-        Session session = new Session();
-        session.setUser(user);
-        session.setToken(token);
-        session.setCreatedAt(LocalDateTime.now());
-        session.setExpiresAt(expiresAt);
-        return sessionRepositoryWrapper.save(session);
-    }
-
-    public Session refreshSession(String token) {
-        Session session = (Session) sessionRepositoryWrapper.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
-
-        session.setExpiresAt(LocalDateTime.now().plusHours(1));
-        return sessionRepositoryWrapper.save(session);
-    }
-
-    // Authentication-related methods
-    public Session authenticate(String email, String password) {
-        User user = findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!checkPassword(user, password)) {
-            throw new RuntimeException("Invalid password");
-        }
-
-        String token = generateToken(user);
-        return createSession(user, token, LocalDateTime.now().plusHours(1));
-    }
-
-    private String generateToken(User user) {
-        return Jwts.builder()
-                .setSubject(user.getEmail())
-                .setIssuer(jwtIssuer)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512, secretKey)
-                .compact();
     }
 }

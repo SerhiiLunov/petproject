@@ -1,7 +1,6 @@
 package dev.lunyov.petprojectsql.controller;
 
-import dev.lunyov.petprojectsql.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import dev.lunyov.petprojectsql.service.JwtService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,12 +13,15 @@ import java.util.Map;
 @RequestMapping("/api")
 public class SimpleAuthController {
 
-    @Autowired
-    private UserService userService;
+    private JwtService jwtService;
+
+    public SimpleAuthController(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     @GetMapping("/generate-token")
     public Map<String, String> generateToken(@RequestParam String email) {
-        String token = userService.generateJwtToken(email);
+        String token = jwtService.generateJwtToken(email);
         Map<String, String> response = new HashMap<>();
         response.put("jwt", token);
         return response;

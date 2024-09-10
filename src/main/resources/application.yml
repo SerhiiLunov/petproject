@@ -8,19 +8,47 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true;
-        use_sql_comments: true;
-
+        format_sql: true
+        use_sql_comments: true
+        default_schema: public
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sl.krovlia@gmail.com
+    password: vntc imxa zugi hvbq
+    properties:
+     mail:
+       smtp:
+        auth: true
+        starttls:
+         enable: true
+  security:
+    user:
+      name: user
+      password: 123cvb567
 
 
 liquibase:
   change-log: classpath:db.changelog/0.0.1/db.changelog-master.yaml
 
 server:
-  port: 8097
+  port: 8084
 
 jwt:
-   secret: your_jwt_secret_here_with_minimum_32_characters
+   secret: bOm6+8eRPw1yoopx50KQ4otoM4MNXWbtcLqjLuIlFzASyKnwU6vS0Gkoh4+6qjCNq1ZI5u+rlKjVoskLOfmetg==
    issuer: your_jwt_issuer_here
    expiration: 3600000
 
+logging:
+  file:
+    name: app.log  # Назва файлу журналів
+  level:
+    org:
+      springframework: DEBUG  # Рівень логування для Spring
+    io:
+      jsonwebtoken: DEBUG  # Рівень логування для JWT бібліотеки
+    dev:
+      lunyov:
+        petprojectsql:
+          service:
+            JwtService: DEBUG  # Рівень логування для вашого JwtService
