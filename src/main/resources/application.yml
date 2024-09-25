@@ -32,7 +32,7 @@ liquibase:
   change-log: classpath:db.changelog/0.0.1/db.changelog-master.yaml
 
 server:
-  port: 8084
+  port: 8087
 
 jwt:
    secret: bOm6+8eRPw1yoopx50KQ4otoM4MNXWbtcLqjLuIlFzASyKnwU6vS0Gkoh4+6qjCNq1ZI5u+rlKjVoskLOfmetg==
